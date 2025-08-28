@@ -1,11 +1,8 @@
-import React from 'react';
-
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <p>Start prompting (or editing) to see magic happen :)</p>
+    <div style={{ padding: 24 }}>
+      <h1>new-mega-meng</h1>
+      <p>Clean base is running. Features come later.</p>
     </div>
   );
 }
-
-export default App;
