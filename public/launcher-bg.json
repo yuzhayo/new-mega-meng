@@ -1,0 +1,9 @@
+﻿{
+  "layers": [
+    { "src": "/Asset/BG/BG1.png", "fit": "cover" },
+    { "src": "/Asset/BG/BG2.png", "fit": "cover" },
+    { "src": "/Asset/BG/BG3.png", "fit": "cover" },
+    { "src": "/Asset/BG/BG4.png", "fit": "cover" },
+    { "src": "/Asset/BG/BG5.png", "fit": "cover" }
+  ]
+}

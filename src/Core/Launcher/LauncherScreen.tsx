@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTripleTapToggle, GestureLayer } from "./LauncherHooks";
 import LauncherBtn from "./LauncherBtn";
+import LauncherScreenBG from "./LauncherScreenBG";
 
 /* ============================================================
    TYPES SECTION
@@ -104,9 +105,11 @@ export default function LauncherScreen(_: Props) {
   return (
     <div ref={ref} className="relative w-full h-screen bg-gray-900">
       <OriginProvider value={origin}>
+        {/* ADD: Background stack dari manifest public */}
+        <LauncherScreenBG origin={origin} manifestPath="/launcher-bg.json" />
         {/* ORIGIN DOT */}
         <div
-          className="absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full ring-1 ring-white shadow"
+          className="absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{ width: ORIGIN_DOT, height: ORIGIN_DOT, backgroundColor: "#28eb49ff" }}
           aria-label="origin marker"
         />
@@ -128,3 +131,4 @@ export default function LauncherScreen(_: Props) {
    STYLES SECTION
    ============================================================ */
 // Tailwind utility classes only
+
