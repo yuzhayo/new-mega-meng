@@ -2,6 +2,8 @@
    IMPORT SECTION
    ============================================================ */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useTripleTapToggle, GestureLayer } from "./LauncherHooks";
+import LauncherBtn from "./LauncherBtn";
 
 /* ============================================================
    TYPES SECTION
@@ -21,7 +23,7 @@ export type Norm = { x: number; y: number };
    ============================================================ */
 // Small config constants
 export const OVERLAY_ID = "overlay-root";         /* overlay container id used by portals */
-export const ORIGIN_DOT = 6;                       /* center dot size in px */
+export const ORIGIN_DOT = 2;                      /* center dot size in px */
 
 // Context for publishing origin data to external components
 const OriginContext = createContext<OriginState | null>(null);
@@ -60,34 +62,28 @@ function useOriginState(size: Readonly<{ width: number; height: number }>): Orig
     const w = size.width;
     const h = size.height;
 
-    // Guard: sebelum ResizeObserver update, nilai bisa 0
     if (w <= 0 || h <= 0) {
-      // fallback sementara, supaya konsumen OriginState gak meledak
       return {
         width: w,
         height: h,
         centerX: 0,
         centerY: 0,
-        // jangan 0 supaya operasi bagi/normalisasi aman
         scale: 1,
       };
     }
 
     const centerX = w / 2;
     const centerY = h / 2;
-
-    // Skala aman: setengah sisi terpendek, minimal 1
     const scale = Math.max(1, 0.5 * Math.min(w, h));
 
     return { width: w, height: h, centerX, centerY, scale };
-  }, [size.width, size.height]); // lebih stabil daripada [size]
+  }, [size.width, size.height]);
 }
-
 
 // Mapping helpers
 export function mapToPx(o: OriginState, n: Norm) {
-  const left = o.centerX + n.x * o.scale;  /* X increases to the right */
-  const top  = o.centerY - n.y * o.scale;  /* Y increases upward (screen Y inverted) */
+  const left = o.centerX + n.x * o.scale;
+  const top = o.centerY - n.y * o.scale;
   return { left, top };
 }
 export function pxToNorm(o: OriginState, p: { left: number; top: number }): Norm {
@@ -100,29 +96,29 @@ export function pxToNorm(o: OriginState, p: { left: number; top: number }): Norm
    UI SECTION
    ============================================================ */
 export default function LauncherScreen(_: Props) {
-  const ref = useRef<HTMLDivElement | null>(null); // main container ref
-  const size = useSize(ref);                       // live width/height
-  const origin = useOriginState(size);             // center & scale based on size
+  const ref = useRef<HTMLDivElement | null>(null);
+  const size = useSize(ref);
+  const origin = useOriginState(size);
+  const { show, onPointerDown } = useTripleTapToggle();
 
   return (
-    <div
-      ref={ref}
-      className="relative w-full h-screen bg-gray-900" /* background color is set here -> change bg-gray-900 as needed */
-    >
+    <div ref={ref} className="relative w-full h-screen bg-gray-900">
       <OriginProvider value={origin}>
-        {/* ORIGIN DOT (visible center marker) */}
+        {/* ORIGIN DOT */}
         <div
           className="absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full ring-1 ring-white shadow"
-          style={{ width: ORIGIN_DOT, height: ORIGIN_DOT, backgroundColor: "#28eb49ff" }} /* change color/size if needed */
+          style={{ width: ORIGIN_DOT, height: ORIGIN_DOT, backgroundColor: "#28eb49ff" }}
           aria-label="origin marker"
         />
 
-        {/* OVERLAY ROOT: external layers should portal into this element */}
-        <div
-          id={OVERLAY_ID}
-          className="pointer-events-none absolute inset-0 z-50"
-          /* interactive children must set pointer-events-auto on themselves */
-        />
+        {/* OVERLAY ROOT */}
+        <div id={OVERLAY_ID} className="pointer-events-none absolute inset-0 z-50" />
+
+        {/* Gesture layer */}
+        <GestureLayer onPointerDown={onPointerDown} />
+
+        {/* Toggle button */}
+        {show && <LauncherBtn />}
       </OriginProvider>
     </div>
   );
@@ -131,4 +127,4 @@ export default function LauncherScreen(_: Props) {
 /* ============================================================
    STYLES SECTION
    ============================================================ */
-// All styling uses Tailwind utility classes on elements; keep config-driven where possible.
+// Tailwind utility classes only
