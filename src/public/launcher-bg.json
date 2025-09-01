@@ -1,9 +1,0 @@
-﻿{
-  "layers": [
-    { "src": "/Asset/BG/BG1.png", "fit": "cover", "scalePct": 100, "posPct": { "x": 0, "y": 0 } },
-    { "src": "/Asset/BG/BG2.png", "fit": "cover", "scalePct": 100, "posPct": { "x": 0, "y": 0 } },
-    { "src": "/Asset/BG/BG3.png", "fit": "cover", "scalePct": 100, "posPct": { "x": 0, "y": 0 } },
-    { "src": "/Asset/BG/BG4.png", "fit": "cover", "scalePct": 100, "posPct": { "x": 0, "y": 0 } },
-    { "src": "/Asset/BG/BG5.png", "fit": "cover", "scalePct": 100, "posPct": { "x": 0, "y": 0 } }
-  ]
-}
