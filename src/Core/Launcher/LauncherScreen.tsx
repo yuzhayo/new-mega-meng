@@ -55,15 +55,34 @@ function useSize(el: React.RefObject<HTMLDivElement | null>) {
    LOGIC SECTION
    ============================================================ */
 // Compute origin at screen center and a safe scale value
-function useOriginState(size: { width: number; height: number }): OriginState {
+function useOriginState(size: Readonly<{ width: number; height: number }>): OriginState {
   return useMemo(() => {
-    const { width, height } = size;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const scale = 0.5 * Math.min(width, height);
-    return { width, height, centerX, centerY, scale };
-  }, [size]);
+    const w = size.width;
+    const h = size.height;
+
+    // Guard: sebelum ResizeObserver update, nilai bisa 0
+    if (w <= 0 || h <= 0) {
+      // fallback sementara, supaya konsumen OriginState gak meledak
+      return {
+        width: w,
+        height: h,
+        centerX: 0,
+        centerY: 0,
+        // jangan 0 supaya operasi bagi/normalisasi aman
+        scale: 1,
+      };
+    }
+
+    const centerX = w / 2;
+    const centerY = h / 2;
+
+    // Skala aman: setengah sisi terpendek, minimal 1
+    const scale = Math.max(1, 0.5 * Math.min(w, h));
+
+    return { width: w, height: h, centerX, centerY, scale };
+  }, [size.width, size.height]); // lebih stabil daripada [size]
 }
+
 
 // Mapping helpers
 export function mapToPx(o: OriginState, n: Norm) {
@@ -93,8 +112,8 @@ export default function LauncherScreen(_: Props) {
       <OriginProvider value={origin}>
         {/* ORIGIN DOT (visible center marker) */}
         <div
-          className="absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white shadow"
-          style={{ width: ORIGIN_DOT, height: ORIGIN_DOT, backgroundColor: "#d63131ff" }} /* change color/size if needed */
+          className="absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full ring-1 ring-white shadow"
+          style={{ width: ORIGIN_DOT, height: ORIGIN_DOT, backgroundColor: "#28eb49ff" }} /* change color/size if needed */
           aria-label="origin marker"
         />
 
